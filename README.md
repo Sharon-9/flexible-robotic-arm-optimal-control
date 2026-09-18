@@ -1,101 +1,90 @@
-================================================================
-Project - Optimal Control of a Flexible Robotic Arm
-Group #39 - Martina Raffaele, Sharon Patrone, Sarah Mercolino
-================================================================
+# Optimal Control of a Flexible Robotic Arm
 
-FILES DESCRIPTION
------------------
-task0_discretized_dynamics.py
-    Defines the system parameters, the discrete-time nonlinear
-    dynamics via Forward Euler, and the state/input dimensions.
+Optimal trajectory generation and trajectory tracking for an underactuated two-link robotic arm using nonlinear optimal control, LTV-LQR and Model Predictive Control.
 
-task1_trajectory_generation.py
-    Task 1: computes two equilibria, builds a sigmoid-interpolated
-    reference curve, and runs the Newton-like algorithm to generate
-    the optimal trajectory.
+Course project developed for **Optimal Control and Reinforcement Learning**  
+MSc in Automation Engineering — University of Bologna
 
-task2_trajectory_generation.py
-    Task 2: computes a quasi-static reference trajectory, obtains
-    an LQR-based initial guess, and runs the Newton-like algorithm
-    on the new reference.
+**Supervisor:** Prof. Giuseppe Notarstefano
 
-task3_trajectory_tracking_via_LQR.py
-    Task 3: linearizes the dynamics along the generated trajectory
-    and computes LTV-LQR tracking gains via Riccati recursion.
-    Simulates tracking under five initial perturbations.
+## Overview
 
-task4_trajectory_tracking_via_MPC.py
-    Task 4: tracks the generated trajectory using a constrained
-    receding-horizon linear MPC with prediction horizon Np=5.
-    The controller operates in error coordinates and enforces
-    bounds on the actual control input. Simulates the same five
-    perturbation scenarios as Task 3.
+The project considers a planar two-link robotic arm actuated only at the first joint.
 
-task5_animation.py
-    Task 5: produces an animation of the two-link arm executing
-    the LQR tracking from Task 3. Saves the result as a GIF file.
+The nonlinear dynamics are modeled and discretized using Forward Euler. Optimal trajectories are generated through a Newton-like optimization method, while trajectory tracking is performed using both LTV-LQR and constrained Model Predictive Control.
 
-equilibria.py
-    Computes equilibrium configurations by solving the static
-    gravity balance condition using scipy fsolve.
+The implementation includes:
 
-reference_curves.py
-    Builds the sigmoid-interpolated reference (Task 1) and the
-    quasi-static trajectory (Task 2).
+- nonlinear dynamic modelling
+- equilibrium computation
+- trajectory generation
+- Newton-like optimal control
+- Armijo backtracking line search
+- LTV-LQR trajectory tracking
+- constrained MPC in error coordinates
+- simulation under different initial perturbations
+- animation of the controlled robotic arm
 
-linearization.py
-    Computes the Jacobians of the discrete-time dynamics using
-    CasADi algorithmic differentiation. Builds the local LQ model
-    for the Newton algorithm.
+## Technologies
 
-costs.py
-    Defines stage cost, terminal cost, total cost, and their
-    derivatives.
+Python · NumPy · SciPy · CasADi · Matplotlib · Python Control
 
-lqr_solver.py
-    Solves the affine LQR subproblem (Newton step) and the
-    LTV-LQR tracking problem via backward Riccati recursion.
+## Control Methods
 
-mpc_solver.py
-    Solves the constrained finite-horizon linear MPC tracking
-    problem in error coordinates using CasADi Opti and IPOPT.
-    Enforces bounds on the actual control input and returns
-    the first control action of the optimized sequence.
+### Optimal Trajectory Generation
 
-rollout.py
-    Implements the closed-loop rollout, the Newton direction
-    computation, the LQR tracking simulation, and the constrained
-    MPC tracking simulation on the nonlinear system.
+Two trajectory generation approaches are implemented:
 
-costates.py
-    Computes the costate sequence and the reduced gradient
-    of the cost function.
+- sigmoid-interpolated reference between equilibrium configurations
+- quasi-static reference trajectory with an LQR-based initial guess
 
-line_search.py
-    Implements the Armijo backtracking line search.
+The optimization is performed using a Newton-like method based on local affine LQR subproblems and backward Riccati recursion.
 
-initial_guess.py
-    Provides the initial feasible trajectories for Task 1
-    (reference input rollout) and Task 2 (LQR-tracked
-    quasi-static trajectory).
+### LTV-LQR Tracking
 
-HOW TO RUN
-----------
-Each task can be run independently. Tasks 3, 4 and 5 internally call task2_trajectory_generation.py
-to obtain the generated trajectory, so running them will also
-execute Task 2 first.
+The nonlinear system is linearized along the generated trajectory and an LTV-LQR controller is used to track it under different initial perturbations.
 
-The animation produced by Task 5 can be saved as task5_animation.gif in the working directory by
-setting SAVE_ANIMATION = True (Task 5).By default, the animation shows the trajectory with a 10 deg
-    perturbation on theta1. To animate a different perturbation, change the index in the line:
-        label, pp, xx_track, uu_track = tracking_trajs[4]
-    where the index corresponds to:
-        0 -> theta1 2 deg
-        1 -> theta2 2 deg
-        2 -> theta1/theta2 2 deg
-        3 -> theta1 5 deg
-        4 -> theta1 10 deg
+### Model Predictive Control
+
+A constrained receding-horizon linear MPC is implemented in error coordinates.
+
+The controller uses a prediction horizon of `Np = 5` and explicitly enforces bounds on the actual control input. The optimization problem is solved using CasADi Opti and IPOPT.
+
+## Project Structure
+
+```text
+task0_discretized_dynamics.py         Nonlinear dynamics and discretization
+task1_trajectory_generation.py        Trajectory generation — Task 1
+task2_trajectory_generation.py        Trajectory generation — Task 2
+task3_trajectory_tracking_via_LQR.py  LTV-LQR tracking
+task4_trajectory_tracking_via_MPC.py  Constrained MPC tracking
+task5_animation.py                    Robotic arm animation
+```
+
+Additional modules contain the equilibrium solver, linearization, cost functions, LQR and MPC solvers, rollout, costate computation and line search.
+
+## Running the Project
+
+Install the required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then run any task, for example:
+
+```bash
+python task3_trajectory_tracking_via_LQR.py
+```
+
+Tasks 3, 4 and 5 automatically generate the trajectory required from Task 2.
 
 ## Report
 
-A detailed description of the project, methodology, and results is available [here](report/Optimal_Control_Flexible_Robotic_Arm_Report.pdf).
+A detailed description of the methodology and results is available in the [project report](report/Optimal_Control_Flexible_Robotic_Arm_Report.pdf).
+
+## Authors
+
+- Sharon Patrone
+- Martina Raffaele
+- Sarah Mercolino
